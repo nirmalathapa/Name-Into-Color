@@ -55,7 +55,7 @@ var Form = React.createClass({
           value={this.state.name}
           onChange={this.handleNameChange}
         />
-        <input className="btn btn-lg btn-primary btn-block" type="submit" value="Send" />
+        <input className="btn btn-lg btn-primary btn-block" type="submit" value="Submit" />
       </form>
     );
   }

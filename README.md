@@ -9,6 +9,14 @@ The idea inspired(stolen) from [Numberphile Illegal Numbers Video](https://youtu
 
 # Dev Setup
 
+Make sure you have `bundler` and `yarn` and `foreman` installed
+
+```
+gem install bundler
+gem install foreman
+npm install -g yarn or brew install yarn
+```
+
 1. Install gems for sinatra
 
 ```
@@ -25,5 +33,5 @@ yarn install
 3. Start app
 
 ```
-foreman start Procfile.dev
+foreman start -f Procfile.dev
 ```

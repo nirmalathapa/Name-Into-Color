@@ -1,9 +1,9 @@
 class Color
   attr_reader :name, :numbers
 
-  def initialize name
+  def initialize name = nil
     @numbers = ''
-    @name = name
+    @name = name.to_s
   end
 
   def hex_colors

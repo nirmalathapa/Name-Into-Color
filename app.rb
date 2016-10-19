@@ -7,8 +7,8 @@ get '/' do
 end
 
 post '/api/colors' do
-   headers 'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST']  
+  headers 'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST']
   color = Color.new params['name']
   json color.hex_colors
 end

@@ -1,51 +1,60 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
 
-var App = React.createClass({
-  render: function() {
-    return(
-      <div>
-      <Form className="form-signin" onSubmitHook={this.submitHandler}/>
-      <ColorList colors={this.state.colors} />
-      </div>
-    )
-  },
-  getInitialState: function() {
-    return {colors: []};
-  },
-  submitHandler: function(form) {
+class App extends Component {
+  static propTypes = {
+    url: PropTypes.string.isRequired
+  }
+
+  state = {colors: []}
+
+  submitHandler = form => {
     $.ajax({
       url: this.props.url,
       dataType: 'json',
       type: 'POST',
       data: form,
-      success: function(colors) {
-        this.setState({colors: colors});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
+      success: colors => {
+        this.setState({colors})
+      },
+      error: () => {
+        this.setState({colors: []})
+      },
+    })
   }
-});
 
-var Form = React.createClass({
-  getInitialState: function() {
-    return {name: ''};
-  },
-  handleNameChange: function(e) {
-    this.setState({name: e.target.value});
-  },
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var name = this.state.name.trim();
+  render() {
+    return (
+      <div>
+        <Form className="form-signin" onSubmitHook={this.submitHandler} />
+        <ColorList colors={this.state.colors} />
+      </div>
+    )
+  }
+}
+
+class Form extends Component {
+  static propTypes = {
+    onSubmitHook: PropTypes.func.isRequired
+  }
+
+  state = {name: ''}
+
+  handleNameChange = ({target}) => {
+    this.setState({name: target.value})
+  }
+  handleSubmit = e => {
+    e.preventDefault()
+    const name = this.state.name.trim()
     if (!name) {
-      return;
+      return
     }
-    this.props.onSubmitHook({name: name});
-    this.setState({name: ''});
-  },
-  render: function() {
+    this.props.onSubmitHook({name})
+    this.setState({name: ''})
+  }
+
+  render() {
     return (
       <form className="form-signin" onSubmit={this.handleSubmit}>
         <input
@@ -55,29 +64,31 @@ var Form = React.createClass({
           value={this.state.name}
           onChange={this.handleNameChange}
         />
-        <input className="btn btn-lg btn-primary btn-block" type="submit" value="Submit" />
+        <input
+          className="btn btn-lg btn-primary btn-block"
+          type="submit"
+          value="Submit"
+        />
       </form>
-    );
+    )
   }
-});
+}
 
-var ColorList = React.createClass({
-  render: function() {
-    var colorBoxes = this.props.colors.map(function(color) {
-      var style = {
-        backgroundColor: '#' + color
-      }
-      return (
-        <div className="color-swatch" style={style}>
-        </div>
-      );
-    });
-    return (
-      <div className="color-swatches">
-        {colorBoxes}
-      </div>
-    );
-  }
-});
+const ColorBoxes = ({colors}) => {
+  return colors.map((color,index) => {
+    const styles = {
+      backgroundColor: `#${color}`,
+    }
+    return <div className="color-swatch" style={styles} key={index} />
+  })
+}
 
-ReactDOM.render(<App url="/api/colors"/>, document.getElementById('app'))
+const ColorList = ({colors}) => (
+  <div className="color-swatches"><ColorBoxes colors={colors}/></div>
+)
+
+ColorList.propTypes = {
+  colors: PropTypes.array
+}
+
+ReactDOM.render(<App url="/api/colors" />, document.getElementById('app'))

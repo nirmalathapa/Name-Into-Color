@@ -4,24 +4,27 @@ import PropTypes from 'prop-types'
 
 class App extends Component {
   static propTypes = {
-    url: PropTypes.string.isRequired
+    url: PropTypes.string.isRequired,
   }
 
   state = {colors: []}
 
-  submitHandler = form => {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: form,
-      success: colors => {
-        this.setState({colors})
-      },
-      error: () => {
-        this.setState({colors: []})
-      },
+  submitHandler = ({name}) => {
+    let data = new URLSearchParams()
+
+    data.set('name', name)
+
+    fetch(this.props.url, {
+      method: 'POST',
+      body: data,
+      headers: new Headers({
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+      }),
     })
+      .then(res => res.json())
+      .catch(() => this.setState({colors: []}))
+      .then(colors => this.setState({colors}))
   }
 
   render() {
@@ -36,7 +39,7 @@ class App extends Component {
 
 class Form extends Component {
   static propTypes = {
-    onSubmitHook: PropTypes.func.isRequired
+    onSubmitHook: PropTypes.func.isRequired,
   }
 
   state = {name: ''}
@@ -75,7 +78,7 @@ class Form extends Component {
 }
 
 const ColorBoxes = ({colors}) => {
-  return colors.map((color,index) => {
+  return colors.map((color, index) => {
     const styles = {
       backgroundColor: `#${color}`,
     }
@@ -84,11 +87,13 @@ const ColorBoxes = ({colors}) => {
 }
 
 const ColorList = ({colors}) => (
-  <div className="color-swatches"><ColorBoxes colors={colors}/></div>
+  <div className="color-swatches">
+    <ColorBoxes colors={colors} />
+  </div>
 )
 
 ColorList.propTypes = {
-  colors: PropTypes.array
+  colors: PropTypes.array,
 }
 
 ReactDOM.render(<App url="/api/colors" />, document.getElementById('app'))
